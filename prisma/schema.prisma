@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  username String @unique
+  password String
+
+  Workspace      Workspace[]
+  MemberWorkpace MemberWorkpace[]
+}
+
+enum Type {
+  PUBLIC
+  PRIVATE
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  name String
+  type Type   @default(PUBLIC)
+
+  author         User             @relation(fields: [authorId], references: [id])
+  authorId       String
+  MemberWorkpace MemberWorkpace[]
+  Dashboard      Dashboard[]
+}
+
+model MemberWorkpace {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  Workspace   Workspace @relation(fields: [workSpaceId], references: [id])
+  workSpaceId String
+
+  Member   User   @relation(fields: [MemberId], references: [id])
+  MemberId String
+}
+
+model Dashboard {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  name        String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  Task Task[]
+}
+
+model Task {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  name String
+
+  Dashboard   Dashboard @relation(fields: [dashboardId], references: [id])
+  dashboardId String
+}
