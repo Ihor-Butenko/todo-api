@@ -21,6 +21,6 @@ app.use(session({
 app.use('/api', protection, verifyToken, router)
 
 app.post('/signup', createUser)
-app.get('/signin', signInUser)
+app.post('/signin', signInUser)
 
 export default app
